@@ -6,7 +6,7 @@ window.KONFIG = {
 
   /* Naslov na vrhu strani */
   naslov: 'Kateri film gledamo?',
-  podnaslov: 'Oceni vsak film. Zmaga tisti z največ točkami.',
+  podnaslov: 'Za vsak film povej Ja ali Ne. Zmaga tisti z največ glasovi ZA.',
 
   /* --------------------------------------------------------
      POVEZAVA DO GOOGLE APPS SCRIPT (glej NAVODILA.md, korak 2)
@@ -23,10 +23,14 @@ window.KONFIG = {
      FILMI — zamenjaj z vašimi. Priporočeno 3-5 filmov.
      'id' mora biti kratek, brez šumnikov in presledkov,
      ker postane ime stolpca v Google Preglednici.
+     'plakat' je pot do slike v mapi app/plakati/ (neobvezno —
+     brez nje se kartica izriše samo z besedilom). Slike so lokalne,
+     da stran ne potrebuje nobenega zunanjega strežnika.
      -------------------------------------------------------- */
   filmi: [
     {
       id: 'gattaca',
+      plakat: 'plakati/gattaca.jpg',
       naslov: 'Gattaca',
       leto: 1997,
       zanr: 'ZF drama / triler',
@@ -35,6 +39,7 @@ window.KONFIG = {
     },
     {
       id: 'suspects',
+      plakat: 'plakati/suspects.jpg',
       naslov: 'The Usual Suspects',
       leto: 1995,
       zanr: 'Kriminalka / triler',
@@ -43,6 +48,7 @@ window.KONFIG = {
     },
     {
       id: 'superbad',
+      plakat: 'plakati/superbad.jpg',
       naslov: 'Superbad',
       leto: 2007,
       zanr: 'Komedija',
@@ -51,10 +57,12 @@ window.KONFIG = {
     }
   ],
 
-  /* Možnosti odgovora in njihove točke. Ne spreminjaj ključev. */
+  /* Možnosti odgovora. Ne spreminjaj ključev in točk:
+     zaledje (Code.gs) šteje vrednost 2 kot "Ja" in 0 kot "Ne".
+     Če bi kdaj hotel nazaj tri stopnje, dodaj vmes
+     { kljuc: 'mogoce', oznaka: 'Mogoče', tocke: 1 } — vmesnik to podpira. */
   moznosti: [
-    { kljuc: 'ja',      oznaka: 'Ja',      tocke: 2 },
-    { kljuc: 'mogoce',  oznaka: 'Mogoče',  tocke: 1 },
-    { kljuc: 'ne',      oznaka: 'Ne',      tocke: 0 }
+    { kljuc: 'ja', oznaka: 'Ja', tocke: 2 },
+    { kljuc: 'ne', oznaka: 'Ne', tocke: 0 }
   ]
 };
