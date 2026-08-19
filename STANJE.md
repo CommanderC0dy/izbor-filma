@@ -1,18 +1,28 @@
 # Stanje postavitve
 
-Zadnja sprememba: 19. 8. 2026
+Zadnja sprememba: 19. 8. 2026 — **aplikacija je objavljena in preverjena v živo.**
 
-## Kaj je že postavljeno in preverjeno
+## Naslov za udeležence
+
+```
+https://commanderc0dy.github.io/izbor-filma/
+```
+
+- QR koda tega naslova: `qr.png` (444 × 444 px) in `qr.svg` (za projekcijo/tisk v poljubni velikosti).
+  Obe sta preverjeni z bralnikom — vrneta točno zgornji naslov.
+- Lestvica v živo za projektor: <https://commanderc0dy.github.io/izbor-filma/rezultati.html>
+  (osveži se sama vsakih 6 sekund).
+
+## Kaj je postavljeno
 
 | Del | Stanje | Naslov |
 |---|---|---|
-| Google Preglednica `Izbor filma` | ✅ deluje, list `Glasovi` z glavo, 0 glasov | [odpri](https://docs.google.com/spreadsheets/d/1oL7Rw1N-LUru9bRzpPktZeuIZZi0KE_LFjUwgTpi5vw/edit) |
-| Apps Script projekt `Izbor filma - zaledje` | ✅ koda shranjena, avtoriziran | [odpri](https://script.google.com/home/projects/1Z5XhVYf4XHfzxKFJHHIRjmXUiPsQdkneWK93swrjL1Q_wVMsdZxORTkM/edit) |
-| Uvedba spletne aplikacije (Web app) | ✅ Verzija 1, dostop **Kdor koli** (brez prijave) | glej `scriptUrl` spodaj |
-| `app/filmi.js` → `scriptUrl` | ✅ vpisan | — |
-| Filmi v `app/filmi.js` | ✅ Gattaca, The Usual Suspects, Superbad | — |
-| Objava aplikacije (Netlify) | ⏳ **čaka na tvojo prijavo v Netlify** | — |
-| QR koda | ⏳ šele ko bo znan končni naslov | — |
+| Google Preglednica `Izbor filma` | ✅ list `Glasovi` | [odpri](https://docs.google.com/spreadsheets/d/1oL7Rw1N-LUru9bRzpPktZeuIZZi0KE_LFjUwgTpi5vw/edit) |
+| Apps Script `Izbor filma - zaledje` | ✅ uveden, dostop **Kdor koli** (brez prijave) | [odpri](https://script.google.com/home/projects/1Z5XhVYf4XHfzxKFJHHIRjmXUiPsQdkneWK93swrjL1Q_wVMsdZxORTkM/edit) |
+| Objava aplikacije | ✅ GitHub Pages, veja `gh-pages` | [repozitorij](https://github.com/CommanderC0dy/izbor-filma) |
+| QR koda | ✅ `qr.png`, `qr.svg` | — |
+| Filmi | ✅ Gattaca, The Usual Suspects, Superbad (s plakati) | — |
+| Glasovanje | ✅ samo **Ja / Ne** | — |
 
 `scriptUrl` (zaledje):
 
@@ -23,49 +33,49 @@ https://script.google.com/macros/s/AKfycbyuUtUQXc3oAeJjLhQyDo1-trjfqVAN4AfOuG6je
 ID preglednice (vpisan v `apps-script/Code.gs` kot `ID_PREGLEDNICE`):
 `1oL7Rw1N-LUru9bRzpPktZeuIZZi0KE_LFjUwgTpi5vw`
 
-## Kako je bilo zaledje preverjeno
+## ⚠️ Eno opravilo zate: pobriši testni glas
 
-Klici z terminala, torej **brez prijave v Google** — enako, kot bo pri udeležencih:
+V preglednici je **1 testna vrstica** (ime `TEST-POBRISI`, pri vseh filmih `Ne`, torej 0 glasov ZA —
+lestvice ne popači, poveča pa števec glasovalcev za 1).
+
+Pobriši jo tako:
+
+- v [preglednici](https://docs.google.com/spreadsheets/d/1oL7Rw1N-LUru9bRzpPktZeuIZZi0KE_LFjUwgTpi5vw/edit)
+  izbriši vrstico 2, **ali**
+- v Apps Script urejevalniku zaženi funkcijo `pobrisiGlasove` (pobriše vse glasove, glava ostane).
+
+To naredi tik pred dogodkom — takrat gre števec na 0.
+
+## Kako je bilo preverjeno (19. 8. 2026)
+
+V pravem Chromu, proti **objavljenemu naslovu** in **živemu zaledju**:
 
 | Test | Rezultat |
 |---|---|
-| `?action=rezultati` | `200`, `application/json` — anonimni dostop deluje |
-| `?action=glas&...` | `{"ok":true,"zamenjan":false,"vrstica":2}` — glas se zapiše |
-| ponovni glas z isto `naprava` | `{"ok":true,"zamenjan":true,"vrstica":2}` — zamenja, ne podvoji |
-| `?action=rezultati` po glasu | pravilne točke (2/1/0 → interstellar 2, vrnitev 1, spiderverse 0 …) |
-| `?...&callback=cb1` | `cb1({...})` — JSONP, kot ga kliče aplikacija |
+| nalaganje objavljene strani | vsi viri 200 (HTML, CSS, JS, logo, 3 plakati) |
+| izris | 3 filmi s plakati, gumba `Ja`/`Ne` 156 × 50 px, brez vodoravnega drsenja |
+| oddaja glasu z objavljenega naslova | potrditev v ~3,7 s, vrstica zapisana v preglednico |
+| stran z rezultati | prebere iste podatke iz zaledja, pravilno razvrsti |
+| ponovna oddaja z iste naprave | vrstica **zamenjana**, števec glasovalcev ostane 1 |
+| zataknjen glas v čakalni vrsti | stran z rezultati ga sama pošlje, vrsta se izprazni |
+| lokalni (kiosk) način brez zaledja | glasovi se seštevajo v brskalniku, lestvica pravilna |
+| konzola brskalnika | brez napak |
 
-Testni glas je bil po preverjanju pobrisan; števec je spet 0.
+## Drobni opozorili
 
-Po zamenjavi filmov (19. 8. 2026) je bila glava lista `Glasovi` počiščena in znova preverjena:
-testni glas z novimi `id`-ji je ustvaril natanko stolpce `gattaca | suspects | superbad`
-(brez ostankov starih filmov), nato je bil pobrisan. Trenutno stanje: **0 glasov**.
+- **Predpomnilnik.** GitHub Pages postreže staro različico še nekaj minut po objavi. Če si stran
+  odprl prej in vidiš staro (tri možnosti, brez plakatov), naredi trdo osvežitev
+  (Ctrl+Shift+R oz. na telefonu ponovno odpri zavihek). Udeleženci, ki naslov odprejo prvič,
+  vedno dobijo aktualno.
+- **Repozitorij je javen**, torej je javen tudi `scriptUrl`. Za anonimno glasovanje to ni nič
+  novega (naslov ima itak vsak udeleženec), samo vedi, da glas lahko odda kdorkoli s povezavo.
 
-## Kaj moraš narediti ti
+## Če kaj spremeniš
 
-1. **Prijava v Netlify** (računa ne morem odpreti namesto tebe). Ko si prijavljen, se
-   aplikacija objavi kot trajna stran.
-2. Ime poddomene po želji (npr. `izbor-filma-ps.netlify.app`) — Netlify:
-   *Project configuration → Change site name*.
-3. QR koda končnega naslova: v Chromu desni klik na stran → *Ustvari kodo QR za to stran*,
-   ali `qrencode -o qr.png -s 12 'https://<naslov>'`.
+```bash
+# uredi app/filmi.js (filmi, plakati, naslovi)
+git add -A && git commit -m "opis" && git push origin main
+git branch -D gh-pages; git subtree split --prefix app -b gh-pages && git push -f origin gh-pages
+```
 
-## Opozorilo o Netlify Drop brez računa
-
-Brez prijave Netlify Drop:
-
-- stran **zaklene z geslom** (`My-Drop-Site`) → udeleženci ne morejo dostopati (HTTP 401), in
-- jo **po eni uri izbriše**.
-
-Zato brez prijave ta pot ni uporabna za dogodek. Alternativa, če Netlify ne pride v poštev:
-GitHub Pages ali Cloudflare Pages (obe zahtevata prijavo) — ali pa kiosk način iz
-`REZERVNI-NACRT.md`, ki omrežja ne rabi.
-
-## Preverjanje po objavi
-
-Ko bo stran objavljena, na telefonu **z mobilnimi podatki** (ne po WiFi):
-
-1. odpri naslov, oddaj testni glas,
-2. na `rezultati.html` preveri, da se je števec povečal,
-3. testni glas pobriši: v Apps Script urejevalniku zaženi funkcijo `pobrisiGlasove`,
-   ali ročno pobriši vrstico v preglednici.
+Objava traja ~1 minuto. Rezervni načrti so v [REZERVNI-NACRT.md](REZERVNI-NACRT.md).
