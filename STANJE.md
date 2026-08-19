@@ -22,7 +22,7 @@ https://commanderc0dy.github.io/izbor-filma/
 | Objava aplikacije | ✅ GitHub Pages, veja `gh-pages` | [repozitorij](https://github.com/CommanderC0dy/izbor-filma) |
 | QR koda | ✅ `qr.png`, `qr.svg` | — |
 | Filmi | ✅ Gattaca, The Usual Suspects, Superbad (s plakati) | — |
-| Glasovanje | ✅ samo **Ja / Ne**, **en glas na osebo** | — |
+| Glasovanje | ✅ **vsak izbere en film**, en glas na osebo | — |
 
 `scriptUrl` (zaledje):
 
@@ -54,7 +54,12 @@ sta bila v preglednici **2 testna glasova**.
 > v brskalniku počistiš podatke strani, ali pa odpreš zasebno okno. (Brisanje vrstic v preglednici
 > zaklepa v telefonu **ne** odstrani — zaklep je v brskalniku.)
 
-## Kako deluje "en glas na osebo"
+## Kako deluje glasovanje
+
+- Vsak človek **izbere en film** (klik na kartico) in odda glas. Zmaga film z največ glasovi.
+- V preglednici je izbrani film zapisan kot `2`, ostali kot `0`.
+
+### En glas na osebo
 
 - Po oddaji se obrazec na tej napravi **zaklene**: namesto njega se pokaže potrditev in povezava na
   rezultate. Ponovno glasovanje ni mogoče.
@@ -72,7 +77,9 @@ V pravem Chromu, proti **objavljenemu naslovu** in **živemu zaledju**:
 | Test | Rezultat |
 |---|---|
 | nalaganje objavljene strani | vsi viri 200 (HTML, CSS, JS, logo, 3 plakati) |
-| izris | 3 filmi s plakati, gumba `Ja`/`Ne` 156 × 50 px, brez vodoravnega drsenja |
+| izris | 3 filmi s plakati, cela kartica klikalna, brez vodoravnega drsenja |
+| izbira | klik na kartico izbere film; klik na drugo kartico prvo izbiro odvzame |
+| gumb `Oddaj glas` | zaklenjen, dokler ni izbran film |
 | oddaja glasu z objavljenega naslova | potrditev v ~3,7 s, vrstica zapisana v preglednico |
 | stran z rezultati | prebere iste podatke iz zaledja, pravilno razvrsti |
 | ponovna oddaja z iste naprave | vrstica **zamenjana**, števec glasovalcev ostane 1 |

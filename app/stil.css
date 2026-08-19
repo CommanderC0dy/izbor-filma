@@ -76,15 +76,55 @@ h1 {
 /* ---------- kartica filma ---------- */
 
 .film {
+  display: block;
+  position: relative;
   background: var(--kartica);
-  border: 1px solid var(--kartica-rob);
+  border: 2px solid var(--kartica-rob);
   border-radius: var(--radij);
-  padding: 16px 16px 14px;
+  padding: 16px 16px 15px;
   margin-bottom: 14px;
   box-shadow: var(--senca);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.film.odgovorjen { border-color: rgba(0, 168, 232, .45); }
+.film:active { transform: scale(.995); }
+
+/* izbrana kartica: obarvan rob in rahlo obarvano ozadje */
+.film.izbran {
+  border-color: var(--cyan);
+  background: #f2fbff;
+  box-shadow: 0 4px 16px rgba(0, 168, 232, .22);
+}
+
+/* pravi radio je skrit, a ostane dostopen s tipkovnico */
+.film .izbira { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+.film:has(.izbira:focus-visible) { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* krogec desno; ob izbiri kljukica */
+.oznaka {
+  flex: 0 0 auto;
+  align-self: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--polje-rob);
+  border-radius: 50%;
+  background: #fff;
+  position: relative;
+}
+
+.film.izbran .oznaka { border-color: var(--cyan); background: var(--cyan); }
+
+.film.izbran .oznaka::after {
+  content: '';
+  position: absolute;
+  left: 8px; top: 4px;
+  width: 6px; height: 12px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
 
 fieldset { border: 0; margin: 0; padding: 0; }
 

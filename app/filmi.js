@@ -6,7 +6,7 @@ window.KONFIG = {
 
   /* Naslov na vrhu strani */
   naslov: 'Kateri film gledamo?',
-  podnaslov: 'Za vsak film povej Ja ali Ne. Vsak glasuje enkrat.',
+  podnaslov: 'Izberi en film. Vsak ima en glas.',
 
   /* --------------------------------------------------------
      POVEZAVA DO GOOGLE APPS SCRIPT (glej NAVODILA.md, korak 2)
@@ -57,12 +57,7 @@ window.KONFIG = {
     }
   ],
 
-  /* Možnosti odgovora. Ne spreminjaj ključev in točk:
-     zaledje (Code.gs) šteje vrednost 2 kot "Ja" in 0 kot "Ne".
-     Če bi kdaj hotel nazaj tri stopnje, dodaj vmes
-     { kljuc: 'mogoce', oznaka: 'Mogoče', tocke: 1 } — vmesnik to podpira. */
-  moznosti: [
-    { kljuc: 'ja', oznaka: 'Ja', tocke: 2 },
-    { kljuc: 'ne', oznaka: 'Ne', tocke: 0 }
-  ]
+  /* Kaj se zapiše v preglednico za izbrani film. Ne spreminjaj:
+     zaledje (Code.gs) šteje vrednost 2 kot glas ZA, 0 pa kot "ni izbral". */
+  vrednostIzbranega: 2
 };

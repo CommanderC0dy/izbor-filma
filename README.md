@@ -75,26 +75,27 @@ samo vmesnik je vaš.
 
 ## Kako se šteje
 
-Vsak udeleženec pri vsakem filmu pove **Ja** ali **Ne**:
+**Vsak človek ima en glas: izbere en film.** Zmaga film z največ glasovi.
 
 ```
-rezultat filma = število glasov "Ja"
+rezultat filma = število ljudi, ki so izbrali ta film
 ```
 
-To ni isto kot "vsak izbere svojega najljubšega". Pri 30 ljudeh in 3 filmih bi izbira enega
-favorita dala zmagovalca z 12 glasovi in 18 nezadovoljnimi. Ta sistem (t. i. odobritveno
-glasovanje) izbere film, ki je *največ ljudem sprejemljiv* — kar je pri skupinskem ogledu bistvo.
+V preglednici je izbrani film zapisan kot **2**, ostali kot **0** — tako zaledju ni bilo treba
+spremeniti niti vrstice, lestvica pa prikaže število glasov in odstotek.
 
-> V preglednici je "Ja" zapisan kot **2** in "Ne" kot **0** (tako zaledje loči obe možnosti).
-> Na lestvici se prikaže število glasov ZA, ne surova vrednost iz stolpca.
+> Prej je bila v tej aplikaciji ocena Ja/Ne za *vsak* film (t. i. odobritveno glasovanje). Tisti
+> sistem najde film, ki je največ ljudem sprejemljiv; ta sistem najde film, ki ima največ
+> navdušencev. Pri treh filmih in 30 ljudeh je razlika majhna, zato je izbrana enostavnejša
+> različica: en človek, en glas, brez razlage pravil pred glasovanjem.
 
 Podrobnosti, ki so že rešene:
 
 - **En glas na osebo.** Ko je glas oddan, se obrazec na tej napravi zaklene — namesto njega se
-  pokaže potrditev s povezavo na rezultate. Zaledje poleg tega vsak zapis veže na id naprave, zato
-  ista naprava nikoli ne ustvari dveh vrstic (tudi če se pošiljanje ponovi po prekinjeni povezavi).
-  Popolne zaščite brez prijave ni: kdor izbriše podatke brskalnika ali odpre zasebno okno, dobi nov
-  id naprave. Za poletno šolo je to dovolj, za volitve ne.
+  pokaže potrditev s povezavo na rezultate. Zaledje vsak zapis veže na id naprave, zato ista naprava
+  nikoli ne ustvari dveh vrstic (tudi če se pošiljanje ponovi po prekinjeni povezavi). Popolne
+  zaščite brez prijave ni: kdor izbriše podatke brskalnika ali odpre zasebno okno, dobi nov id
+  naprave. Za poletno šolo je to dovolj, za volitve ne.
 - Ime je neobvezno; anonimno glasovanje je bolj iskreno.
 - Stran za rezultate zna izvoziti CSV, če jih rabiš v poročilu.
 - Vsi gumbi so veliki (≥50 px), tipkovnica in bralniki zaslona delujejo, animacije se izklopijo
@@ -118,7 +119,7 @@ Podrobnosti, ki so že rešene:
 - lokalni (kiosk) način brez zaledja → glasovi se seštevajo v brskalniku, lestvica pravilno razvrsti;
 - vsi viri (`index.html`, `rezultati.html`, `filmi.js`, `stil.css`, logo, plakati) se naložijo z
   objavljenega naslova s statusom 200;
-- postavitev pri širini telefona (390 px): gumba `Ja`/`Ne` 156 × 50 px, brez vodoravnega drsenja,
+- postavitev pri širini telefona (390 px): cela kartica filma je klikalna, brez vodoravnega drsenja,
   **brez napak v konzoli**.
 
 Skupna velikost aplikacije: **~120 kB** (vključno s plakati in logotipom, nič zunanjih virov).

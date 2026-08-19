@@ -1,7 +1,7 @@
 # Rezervni načrti (če aplikacija na dan D ne dela)
 
 Pravilo: **pred predstavitvijo imej pripravljen rezervni načrt B, ne šele takrat, ko A odpove.**
-Vsi trije spodnji načini dajo enak rezultat — šteje se število glasov **Ja**.
+Vsi trije spodnji načini dajo enak rezultat — vsak človek izbere en film, zmaga film z največ glasovi.
 
 ---
 
@@ -14,10 +14,10 @@ odpre se tudi na počasni povezavi, rezultate pa sam sešteje v grafe.
 
 1. Odpri <https://forms.new>
 2. Naslov: `Kateri film gledamo?`
-3. Za **vsak film** dodaj eno vprašanje:
-   - Vprašanje: `Interstellar (2014) — bi ga gledal?`
-   - Tip: **Več možnih izbir** (Multiple choice)
-   - Možnosti: `Ja` / `Ne`
+3. Dodaj **eno samo vprašanje**:
+   - Vprašanje: `Kateri film gledamo?`
+   - Tip: **Več možnih izbir** (Multiple choice) — dovoljuje samo en odgovor
+   - Možnosti: `Gattaca` / `The Usual Suspects` / `Superbad`
    - Vklopi **Obvezno** (Required)
 4. Neobvezno prvo vprašanje: `Tvoje ime` (kratek odgovor, ni obvezno).
 5. V *Nastavitvah* pusti **Zbiranje e-poštnih naslovov izklopljeno** (hitrejše, bolj anonimno).
@@ -25,8 +25,8 @@ odpre se tudi na počasni povezavi, rezultate pa sam sešteje v grafe.
    QR koda: Chrome → desni klik na odprt obrazec → *Ustvari kodo QR*.
 7. Rezultati: zavihek **Odgovori** → grafi so že narejeni, ali **Poveži s preglednico** za ročno seštevanje.
 
-**Kako iz Obrazca dobiš rezultat:** v grafu vsakega filma preberi število odgovorov `Ja`.
-Zmaga največja številka — nič računanja. V preglednici je formula `=COUNTIF(B2:B31;"Ja")`.
+**Kako iz Obrazca dobiš rezultat:** Obrazec sam nariše tortni graf odgovorov — zmaga največji
+kos. Nič računanja.
 
 **Slabost:** obrazec je videti kot Googlov obrazec, ne kot vaša aplikacija — za nalogo
 "vibe coding aplikacije" je to načrt B, ne A.
