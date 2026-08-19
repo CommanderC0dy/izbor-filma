@@ -257,9 +257,23 @@
     });
   });
 
+  /* Ena naprava = en glas: ko je glas oddan, obrazca sploh ne pokazemo vec. */
+  function zeGlasoval() {
+    el('vsebina').innerHTML =
+      '<div class="zahvala">' +
+        '<div class="kljukica">✓</div>' +
+        '<h2>Tvoj glas je oddan</h2>' +
+        '<p>Vsak glasuje enkrat, zato je glasovanje na tej napravi zaključeno. ' +
+        'Rezultati se sproti osvežujejo.</p>' +
+        '<button type="button" class="drugotni" id="naprej">Poglej rezultate</button>' +
+      '</div>';
+    el('spodaj').style.display = 'none';
+    el('naprej').addEventListener('click', function () { location.href = 'rezultati.html'; });
+  }
+
   function zahvala(uspelo) {
     var opomba = uspelo
-      ? 'Glas je zabeležen.'
+      ? 'Glas je zabeležen. Vsak glasuje enkrat, zato je to tvoj končni glas.'
       : 'Povezava je odpovedala, zato je glas shranjen na tvoji napravi. Pusti to stran odprto — poslala ga bo sama, ko bo signal.';
 
     el('vsebina').innerHTML =
@@ -292,7 +306,7 @@
   if (LOKALNO) {
     sporocilo('<strong>Lokalni način.</strong> V <code>filmi.js</code> ni nastavljen <code>scriptUrl</code>, zato se glasovi shranjujejo samo v ta brskalnik. Za skupinsko glasovanje glej NAVODILA.md.', 'info');
   } else if (!kiosk && preberi(KLJUC_GLASOVAL, false)) {
-    sporocilo('S te naprave je glas že oddan. Če glasuješ znova, boš prejšnji glas <strong>zamenjal</strong>. <a href="rezultati.html">Rezultati →</a>', 'info');
+    zeGlasoval();
   }
 
   obdelajVrsto();

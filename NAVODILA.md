@@ -109,7 +109,8 @@ Na projektorju naj bo hkrati vidno: **QR koda + naslov strani v besedilu** (nekd
 
 1. Na projektorju odpri `rezultati.html` — lestvica se osvežuje sama.
 2. Udeležencem povej: *"Odprite to povezavo. Če je WiFi obupen, izklopite WiFi in uporabite mobilne podatke — stran je majhna, deluje."*
-3. Vsak pri vsakem filmu pove **Ja** ali **Ne** in odda glas.
+3. Vsak pri vsakem filmu pove **Ja** ali **Ne** in odda glas. Vsak glasuje **enkrat** —
+   po oddaji se obrazec na tisti napravi zaklene.
 4. Ko števec doseže ~30, razglasi zmagovalca.
 
 **Štetje:** šteje se število glasov **Ja**. Zmaga film, ki ga hoče gledati največ ljudi.

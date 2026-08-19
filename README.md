@@ -90,7 +90,11 @@ glasovanje) izbere film, ki je *največ ljudem sprejemljiv* — kar je pri skupi
 
 Podrobnosti, ki so že rešene:
 
-- Ponovna oddaja z iste naprave **zamenja** prejšnji glas, ne doda novega.
+- **En glas na osebo.** Ko je glas oddan, se obrazec na tej napravi zaklene — namesto njega se
+  pokaže potrditev s povezavo na rezultate. Zaledje poleg tega vsak zapis veže na id naprave, zato
+  ista naprava nikoli ne ustvari dveh vrstic (tudi če se pošiljanje ponovi po prekinjeni povezavi).
+  Popolne zaščite brez prijave ni: kdor izbriše podatke brskalnika ali odpre zasebno okno, dobi nov
+  id naprave. Za poletno šolo je to dovolj, za volitve ne.
 - Ime je neobvezno; anonimno glasovanje je bolj iskreno.
 - Stran za rezultate zna izvoziti CSV, če jih rabiš v poročilu.
 - Vsi gumbi so veliki (≥50 px), tipkovnica in bralniki zaslona delujejo, animacije se izklopijo

@@ -6,7 +6,7 @@ window.KONFIG = {
 
   /* Naslov na vrhu strani */
   naslov: 'Kateri film gledamo?',
-  podnaslov: 'Za vsak film povej Ja ali Ne. Zmaga tisti z največ glasovi ZA.',
+  podnaslov: 'Za vsak film povej Ja ali Ne. Vsak glasuje enkrat.',
 
   /* --------------------------------------------------------
      POVEZAVA DO GOOGLE APPS SCRIPT (glej NAVODILA.md, korak 2)
