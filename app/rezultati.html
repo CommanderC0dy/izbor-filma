@@ -84,7 +84,6 @@
         var t = Number(g.ocene[f.id] || 0);
         filmi[f.id].tocke += t;
         if (t >= 2) filmi[f.id].ja++;
-        else if (t === 1) filmi[f.id].mogoce++;
         else filmi[f.id].ne++;
       });
     });
@@ -99,23 +98,27 @@
       var d = (podatki.filmi && podatki.filmi[f.id]) || { tocke: 0, ja: 0, mogoce: 0, ne: 0 };
       return { film: f, d: d };
     }).sort(function (a, b) {
-      return b.d.tocke - a.d.tocke || b.d.ja - a.d.ja;
+      return b.d.ja - a.d.ja || a.d.ne - b.d.ne;
     });
 
-    var najvec = Math.max(1, vrstice[0] ? vrstice[0].d.tocke : 1);
-    var maxMozno = Math.max(1, podatki.glasovalci * 2);
+    var najvec = Math.max(1, vrstice[0] ? vrstice[0].d.ja : 1);
+    var vseh = Math.max(1, podatki.glasovalci);
 
     el('lestvica').innerHTML = vrstice.map(function (v, i) {
-      var sirina = Math.round((v.d.tocke / najvec) * 100);
-      var zmaga = i === 0 && v.d.tocke > 0;
+      var sirina = Math.round((v.d.ja / najvec) * 100);
+      var zmaga = i === 0 && v.d.ja > 0;
+      var plakat = v.film.plakat
+        ? '<img class="vrstica-plakat" src="' + pobegni(v.film.plakat) + '" alt="" width="36" height="54" onerror="this.remove()">'
+        : '';
       return '' +
         '<div class="vrstica' + (zmaga ? ' zmagovalec' : '') + '">' +
           '<div class="vrstica-glava">' +
+            plakat +
             '<span class="vrstica-naslov">' + (zmaga ? '🏆 ' : '') + pobegni(v.film.naslov) + '</span>' +
-            '<span class="vrstica-tocke">' + v.d.tocke + ' / ' + maxMozno + '</span>' +
+            '<span class="vrstica-tocke">' + v.d.ja + ' / ' + vseh + '</span>' +
           '</div>' +
           '<div class="stolpec-ozadje"><div class="stolpec" style="width:' + sirina + '%"></div></div>' +
-          '<div class="razbitje">Ja ' + v.d.ja + ' · Mogoče ' + v.d.mogoce + ' · Ne ' + v.d.ne + '</div>' +
+          '<div class="razbitje">Za ' + v.d.ja + ' · Proti ' + v.d.ne + '</div>' +
         '</div>';
     }).join('');
 
@@ -164,10 +167,10 @@
 
   el('csv').addEventListener('click', function () {
     if (!zadnji) return;
-    var vrstice = [['film', 'tocke', 'ja', 'mogoce', 'ne']];
+    var vrstice = [['film', 'za', 'proti']];
     K.filmi.forEach(function (f) {
       var d = (zadnji.filmi && zadnji.filmi[f.id]) || { tocke: 0, ja: 0, mogoce: 0, ne: 0 };
-      vrstice.push([f.naslov, d.tocke, d.ja, d.mogoce, d.ne]);
+      vrstice.push([f.naslov, d.ja, d.ne]);
     });
     var csv = vrstice.map(function (r) {
       return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
@@ -178,7 +181,7 @@
     a.click();
   });
 
-  el('noga').innerHTML = 'Točkovanje: Ja = 2 točki, Mogoče = 1, Ne = 0. Zmaga film z največ točkami.';
+  el('noga').innerHTML = 'Vsak udeleženec za vsak film pove Ja ali Ne. Zmaga film z največ glasovi ZA.';
 
   naloziRezultate();
   obdelajVrsto();

@@ -126,13 +126,23 @@
                '<label for="' + id + '" data-kljuc="' + m.kljuc + '">' + pobegni(m.oznaka) + '</label>';
       }).join('');
 
+      var plakat = f.plakat
+        ? '<img class="plakat" src="' + pobegni(f.plakat) + '" alt="Plakat filma ' + pobegni(f.naslov) + '"' +
+          ' width="84" height="126" onerror="this.remove()">'
+        : '';
+
       return '' +
         '<fieldset class="film" id="kartica-' + f.id + '">' +
-          '<legend>' +
-            '<span class="film-naslov">' + (i + 1) + '. ' + pobegni(f.naslov) + '</span>' +
-            '<span class="film-meta">' + pobegni([f.leto, f.zanr, f.dolzina].filter(Boolean).join(' · ')) + '</span>' +
-          '</legend>' +
-          (f.opis ? '<p class="film-opis">' + pobegni(f.opis) + '</p>' : '') +
+          // legenda je skrita za oci, a jo bralnik zaslona prebere kot naslov skupine
+          '<legend class="skrito">' + (i + 1) + '. ' + pobegni(f.naslov) + ' — tvoja ocena</legend>' +
+          '<div class="film-vrh">' +
+            plakat +
+            '<div class="film-tekst">' +
+              '<p class="film-naslov">' + (i + 1) + '. ' + pobegni(f.naslov) + '</p>' +
+              '<p class="film-meta">' + pobegni([f.leto, f.zanr, f.dolzina].filter(Boolean).join(' · ')) + '</p>' +
+              (f.opis ? '<p class="film-opis">' + pobegni(f.opis) + '</p>' : '') +
+            '</div>' +
+          '</div>' +
           '<div class="moznosti">' + moznosti + '</div>' +
         '</fieldset>';
     }).join('');

@@ -9,10 +9,11 @@ izbor-filma/
 ├── STANJE.md              ← kaj je že postavljeno, kaj še manjka
 ├── NAVODILA.md            ← korak za korakom: postavitev v ~15 minutah
 ├── REZERVNI-NACRT.md      ← načrti B/C/D + kontrolni seznam pred nastopom
-├── app/                   ← to objaviš (Netlify Drop / GitHub Pages)
+├── app/                   ← to je objavljeno (GitHub Pages, veja gh-pages)
 │   ├── index.html         ← glasovanje
 │   ├── rezultati.html     ← lestvica v živo (za projektor)
 │   ├── filmi.js           ← EDINA datoteka, ki jo urejaš (filmi + scriptUrl)
+│   ├── plakati/           ← plakati filmov (lokalni, pomanjšani)
 │   └── stil.css
 └── apps-script/
     └── Code.gs            ← zaledje: shranjuje glasove v Google Preglednico
@@ -40,14 +41,16 @@ Tvoja skrb je upravičena, ampak vzrok je vredno ločiti na dva dela:
 
 Ključna poteza: **udeleženci ne uporabljajo tamkajšnjega WiFi-ja.**
 
-Aplikacija je objavljena na brezplačnem statičnem hostingu (Netlify) na pravem naslovu s HTTPS.
+Aplikacija je objavljena na brezplačnem statičnem hostingu (GitHub Pages) na pravem naslovu s HTTPS:
+**<https://commanderc0dy.github.io/izbor-filma/>**.
 Vsak odpre povezavo prek **svojih mobilnih podatkov** — 30 neodvisnih povezav namesto ene skupne
 ozke. Tvoj laptop je s tem popolnoma izven poti: v sobi je samo še za projekcijo rezultatov.
 
 Poleg tega:
 
-- **Nič zunanjih virov.** Brez Google Fonts, brez CDN-jev, brez slik plakatov. Ena stran, en CSS,
-  en majhen JS. Nič, kar bi lahko obviselo pri nalaganju.
+- **Nič zunanjih virov.** Brez Google Fonts, brez CDN-jev. Plakati filmov so pomanjšani in
+  shranjeni lokalno v `app/plakati/` (skupaj ~53 kB), zato stran ne kliče nobenega tujega
+  strežnika. Nič, kar bi lahko obviselo pri nalaganju.
 - **Čakalna vrsta za glasove.** Če oddaja glasu ne uspe, se glas shrani v brskalnik in se pošlje
   sam, ko se povezava vrne. Nihče ne izgubi glasu zaradi enega prekinjenega paketa.
 - **Deluje tudi brez zaledja.** Če `scriptUrl` ni nastavljen, aplikacija teče v lokalnem načinu —
@@ -72,15 +75,18 @@ samo vmesnik je vaš.
 
 ## Kako se šteje
 
-Vsak udeleženec vsak film oceni z **Ja / Mogoče / Ne**:
+Vsak udeleženec pri vsakem filmu pove **Ja** ali **Ne**:
 
 ```
-točke filma = 2 × (št. "Ja") + 1 × (št. "Mogoče")
+rezultat filma = število glasov "Ja"
 ```
 
-To ni isto kot "vsak izbere svojega najljubšega". Pri 30 ljudeh in 5 filmih bi izbira enega
-favorita dala zmagovalca s 8 glasovi in 22 nezadovoljnih. Ta sistem (t. i. točkovno glasovanje)
-izbere film, ki je *največ ljudem sprejemljiv* — kar je pri skupinskem ogledu bistvo.
+To ni isto kot "vsak izbere svojega najljubšega". Pri 30 ljudeh in 3 filmih bi izbira enega
+favorita dala zmagovalca z 12 glasovi in 18 nezadovoljnimi. Ta sistem (t. i. odobritveno
+glasovanje) izbere film, ki je *največ ljudem sprejemljiv* — kar je pri skupinskem ogledu bistvo.
+
+> V preglednici je "Ja" zapisan kot **2** in "Ne" kot **0** (tako zaledje loči obe možnosti).
+> Na lestvici se prikaže število glasov ZA, ne surova vrednost iz stolpca.
 
 Podrobnosti, ki so že rešene:
 
@@ -99,17 +105,16 @@ Podrobnosti, ki so že rešene:
 
 ## Kaj je bilo preverjeno
 
-Pred oddajo tega projekta je bilo v pravem brskalniku (Chrome) preizkušeno:
+19. 8. 2026, v pravem Chromu proti **živi** postavitvi (objavljen naslov + Apps Script zaledje):
 
-- oddaja glasu → glas pravilno prispe v zaledje s pravimi točkami;
-- 30 simuliranih glasov → lestvica pravilno sešteje in razvrsti filme;
-- **prekinjena povezava** → glas se shrani v čakalno vrsto in se sam pošlje, ko se povezava vrne;
-- ponovna oddaja z iste naprave → prejšnji glas se zamenja, ne podvoji;
-- **kiosk način** brez omrežja → glasovi se seštevajo lokalno, obrazec se sam počisti za naslednjega;
-- postavitev pri širini telefona (360 px): gumbi 91 × 50 px, brez vodoravnega drsenja, brez napak v konzoli.
+- oddaja glasu z objavljenega naslova → glas prispe v Google Preglednico, potrditev v ~2,7 s;
+- stran z rezultati prebere iste podatke iz zaledja in jih pravilno prikaže;
+- ponovna oddaja z iste naprave → prejšnja vrstica se **zamenja**, števec glasovalcev ostane isti;
+- **zataknjen glas** v čakalni vrsti → stran za rezultate ga pošlje sama, vrsta se izprazni;
+- lokalni (kiosk) način brez zaledja → glasovi se seštevajo v brskalniku, lestvica pravilno razvrsti;
+- vsi viri (`index.html`, `rezultati.html`, `filmi.js`, `stil.css`, logo, plakati) se naložijo z
+  objavljenega naslova s statusom 200;
+- postavitev pri širini telefona (390 px): gumba `Ja`/`Ne` 156 × 50 px, brez vodoravnega drsenja,
+  **brez napak v konzoli**.
 
-Ni bilo preverjeno v živo: dejanska uvedba Apps Script (potrebuje tvoj Google račun) in objava na
-Netlify. Zaledje je bilo testirano proti lokalni kopiji, ki posnema Apps Script; `Code.gs` pa ima
-vgrajeno funkcijo `test`, ki jo zaženeš v urejevalniku (korak 2 v NAVODILA.md).
-
-Skupna velikost aplikacije: **25 kB** (4 datoteke, nič zunanjih virov).
+Skupna velikost aplikacije: **~120 kB** (vključno s plakati in logotipom, nič zunanjih virov).

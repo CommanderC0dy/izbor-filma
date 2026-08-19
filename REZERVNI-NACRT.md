@@ -1,7 +1,7 @@
 # Rezervni načrti (če aplikacija na dan D ne dela)
 
 Pravilo: **pred predstavitvijo imej pripravljen rezervni načrt B, ne šele takrat, ko A odpove.**
-Vsi trije spodnji načini dajo enak rezultat — točke po sistemu Ja/Mogoče/Ne.
+Vsi trije spodnji načini dajo enak rezultat — šteje se število glasov **Ja**.
 
 ---
 
@@ -17,7 +17,7 @@ odpre se tudi na počasni povezavi, rezultate pa sam sešteje v grafe.
 3. Za **vsak film** dodaj eno vprašanje:
    - Vprašanje: `Interstellar (2014) — bi ga gledal?`
    - Tip: **Več možnih izbir** (Multiple choice)
-   - Možnosti: `Ja` / `Mogoče` / `Ne`
+   - Možnosti: `Ja` / `Ne`
    - Vklopi **Obvezno** (Required)
 4. Neobvezno prvo vprašanje: `Tvoje ime` (kratek odgovor, ni obvezno).
 5. V *Nastavitvah* pusti **Zbiranje e-poštnih naslovov izklopljeno** (hitrejše, bolj anonimno).
@@ -25,9 +25,8 @@ odpre se tudi na počasni povezavi, rezultate pa sam sešteje v grafe.
    QR koda: Chrome → desni klik na odprt obrazec → *Ustvari kodo QR*.
 7. Rezultati: zavihek **Odgovori** → grafi so že narejeni, ali **Poveži s preglednico** za ročno seštevanje.
 
-**Kako iz Obrazca dobiš točke:** v grafu vsakega filma preberi število odgovorov.
-`točke = 2 × (št. Ja) + 1 × (št. Mogoče)`. Za 5 filmov je to 5 hitrih računov na papirju,
-ali pa v priloženi preglednici formula `=2*COUNTIF(B2:B31;"Ja")+COUNTIF(B2:B31;"Mogoče")`.
+**Kako iz Obrazca dobiš rezultat:** v grafu vsakega filma preberi število odgovorov `Ja`.
+Zmaga največja številka — nič računanja. V preglednici je formula `=COUNTIF(B2:B31;"Ja")`.
 
 **Slabost:** obrazec je videti kot Googlov obrazec, ne kot vaša aplikacija — za nalogo
 "vibe coding aplikacije" je to načrt B, ne A.

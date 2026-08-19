@@ -86,12 +86,28 @@ h1 {
 
 .film.odgovorjen { border-color: rgba(0, 168, 232, .45); }
 
-.film legend { float: left; width: 100%; padding: 0; }
-
-/* legend brez float bi se izrisal nad okvirjem kartice */
-.film::after { content: ''; display: block; clear: both; }
-
 fieldset { border: 0; margin: 0; padding: 0; }
+
+/* legenda je samo za bralnike zaslona; naslov je viden v .film-naslov */
+.skrito {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* plakat levo, besedilo desno */
+.film-vrh { display: flex; gap: 14px; align-items: flex-start; }
+
+.plakat {
+  flex: 0 0 auto;
+  width: 84px;
+  height: 126px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #e2e7f1;
+  box-shadow: 0 2px 8px rgba(11, 31, 63, .18);
+}
+
+.film-tekst { min-width: 0; }
 
 .film-naslov {
   font-size: 19px;
@@ -111,12 +127,20 @@ fieldset { border: 0; margin: 0; padding: 0; }
 .film-opis {
   color: #465476;
   font-size: 14.5px;
-  margin: 10px 0 14px;
+  margin: 8px 0 0;
+}
+
+/* razmik med blokom s plakatom in gumbi za oceno */
+.film-vrh + .moznosti { margin-top: 14px; }
+
+@media (max-width: 360px) {
+  .plakat { width: 66px; height: 99px; }
+  .film-vrh { gap: 10px; }
 }
 
 /* ---------- gumbi za oceno ---------- */
 
-.moznosti { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.moznosti { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
 
 .moznosti input { position: absolute; opacity: 0; width: 0; height: 0; }
 
@@ -140,7 +164,7 @@ fieldset { border: 0; margin: 0; padding: 0; }
 
 .moznosti input:focus-visible + label { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
-/* tri jasno ločena stanja v barvah znamke */
+/* jasno ločena stanja v barvah znamke (mogoce ostane za primer 3 stopenj) */
 .moznosti input:checked + label[data-kljuc="ja"] {
   background: var(--cyan); border-color: var(--cyan); color: #fff;
 }
@@ -264,14 +288,23 @@ button.glavni:disabled { opacity: .38; cursor: not-allowed; box-shadow: none; }
 
 .vrstica-glava {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: baseline;
   gap: 10px;
   margin-bottom: 7px;
 }
 
 .vrstica-naslov { font-weight: 700; font-size: 16.5px; color: var(--navy); }
-.vrstica-tocke { color: var(--navy-2); font-weight: 700; font-size: 16px; white-space: nowrap; }
+
+.vrstica-plakat {
+  width: 36px; height: 54px;
+  object-fit: cover;
+  border-radius: 5px;
+  flex: 0 0 auto;
+  align-self: center;
+  background: #e2e7f1;
+}
+.vrstica-tocke { color: var(--navy-2); font-weight: 700; font-size: 16px; white-space: nowrap; margin-left: auto; }
 
 .stolpec-ozadje {
   height: 14px;
