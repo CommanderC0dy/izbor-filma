@@ -116,25 +116,19 @@
   el('podnaslov').textContent = K.podnaslov;
   document.title = K.naslov;
 
-  var izbire = {};
+  var izbrani = null;   // en sam film na osebo
 
   function izrisiFilme() {
-    var html = K.filmi.map(function (f, i) {
-      var moznosti = K.moznosti.map(function (m) {
-        var id = 'o-' + f.id + '-' + m.kljuc;
-        return '<input type="radio" name="' + f.id + '" id="' + id + '" value="' + m.kljuc + '">' +
-               '<label for="' + id + '" data-kljuc="' + m.kljuc + '">' + pobegni(m.oznaka) + '</label>';
-      }).join('');
-
+    var kartice = K.filmi.map(function (f, i) {
+      var rid = 'izbira-' + f.id;
       var plakat = f.plakat
         ? '<img class="plakat" src="' + pobegni(f.plakat) + '" alt="Plakat filma ' + pobegni(f.naslov) + '"' +
           ' width="84" height="126" onerror="this.remove()">'
         : '';
 
       return '' +
-        '<fieldset class="film" id="kartica-' + f.id + '">' +
-          // legenda je skrita za oci, a jo bralnik zaslona prebere kot naslov skupine
-          '<legend class="skrito">' + (i + 1) + '. ' + pobegni(f.naslov) + ' — tvoja ocena</legend>' +
+        '<label class="film" id="kartica-' + f.id + '" for="' + rid + '">' +
+          '<input type="radio" class="izbira" name="izbira" id="' + rid + '" value="' + f.id + '">' +
           '<div class="film-vrh">' +
             plakat +
             '<div class="film-tekst">' +
@@ -142,26 +136,32 @@
               '<p class="film-meta">' + pobegni([f.leto, f.zanr, f.dolzina].filter(Boolean).join(' · ')) + '</p>' +
               (f.opis ? '<p class="film-opis">' + pobegni(f.opis) + '</p>' : '') +
             '</div>' +
+            '<span class="oznaka" aria-hidden="true"></span>' +
           '</div>' +
-          '<div class="moznosti">' + moznosti + '</div>' +
-        '</fieldset>';
+        '</label>';
     }).join('');
 
-    el('filmi').innerHTML = html;
+    el('filmi').innerHTML =
+      '<fieldset class="skupina">' +
+        '<legend class="skrito">Izberi en film</legend>' +
+        kartice +
+      '</fieldset>';
   }
 
   function osveziStevec() {
-    var n = Object.keys(izbire).length;
-    el('stevec').textContent = 'Ocenjenih ' + n + ' od ' + K.filmi.length;
-    el('poslji').disabled = n < K.filmi.length;
+    var f = izbrani && K.filmi.filter(function (x) { return x.id === izbrani; })[0];
+    el('stevec').textContent = f ? 'Izbrano: ' + f.naslov : 'Izberi en film';
+    el('poslji').disabled = !izbrani;
   }
 
   el('filmi').addEventListener('change', function (e) {
     var t = e.target;
-    if (t && t.type === 'radio') {
-      izbire[t.name] = t.value;
-      var kartica = el('kartica-' + t.name);
-      if (kartica) kartica.classList.add('odgovorjen');
+    if (t && t.type === 'radio' && t.name === 'izbira') {
+      izbrani = t.value;
+      K.filmi.forEach(function (f) {
+        var k = el('kartica-' + f.id);
+        if (k) k.classList.toggle('izbran', f.id === izbrani);
+      });
       osveziStevec();
     }
   });
@@ -177,10 +177,11 @@
   /* ---------- oddaja ---------- */
 
   function sestaviGlas() {
+    /* V preglednico gre 2 za izbrani film in 0 za ostale — zaledje sesteje
+       dvojke kot glasove ZA, zato tam ni treba nicesar spreminjati. */
     var ocene = {};
     K.filmi.forEach(function (f) {
-      var m = K.moznosti.filter(function (x) { return x.kljuc === izbire[f.id]; })[0];
-      ocene[f.id] = m ? m.tocke : 0;
+      ocene[f.id] = (f.id === izbrani) ? K.vrednostIzbranega : 0;
     });
     return {
       ime: (el('ime').value || '').trim().slice(0, 40),
@@ -229,7 +230,7 @@
 
   el('obrazec').addEventListener('submit', function (e) {
     e.preventDefault();
-    if (Object.keys(izbire).length < K.filmi.length) return;
+    if (!izbrani) return;
 
     var glas = sestaviGlas();
     var gumb = el('poslji');

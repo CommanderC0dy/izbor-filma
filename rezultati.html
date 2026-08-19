@@ -90,6 +90,13 @@
     return { ok: true, glasovalci: vsi.length, filmi: filmi };
   }
 
+  function odstotek(del, celota) {
+    if (!celota) return 'ni glasov';
+    var o = Math.round((del / celota) * 100);
+    var beseda = del === 1 ? 'glas' : del === 2 ? 'glasova' : (del === 3 || del === 4) ? 'glasovi' : 'glasov';
+    return del + ' ' + beseda + ' · ' + o + ' %';
+  }
+
   function izrisi(podatki) {
     zadnji = podatki;
     el('stevilo').textContent = podatki.glasovalci;
@@ -98,7 +105,7 @@
       var d = (podatki.filmi && podatki.filmi[f.id]) || { tocke: 0, ja: 0, mogoce: 0, ne: 0 };
       return { film: f, d: d };
     }).sort(function (a, b) {
-      return b.d.ja - a.d.ja || a.d.ne - b.d.ne;
+      return b.d.ja - a.d.ja;
     });
 
     var najvec = Math.max(1, vrstice[0] ? vrstice[0].d.ja : 1);
@@ -118,7 +125,7 @@
             '<span class="vrstica-tocke">' + v.d.ja + ' / ' + vseh + '</span>' +
           '</div>' +
           '<div class="stolpec-ozadje"><div class="stolpec" style="width:' + sirina + '%"></div></div>' +
-          '<div class="razbitje">Za ' + v.d.ja + ' · Proti ' + v.d.ne + '</div>' +
+          '<div class="razbitje">' + odstotek(v.d.ja, podatki.glasovalci) + '</div>' +
         '</div>';
     }).join('');
 
@@ -167,10 +174,10 @@
 
   el('csv').addEventListener('click', function () {
     if (!zadnji) return;
-    var vrstice = [['film', 'za', 'proti']];
+    var vrstice = [['film', 'glasov']];
     K.filmi.forEach(function (f) {
       var d = (zadnji.filmi && zadnji.filmi[f.id]) || { tocke: 0, ja: 0, mogoce: 0, ne: 0 };
-      vrstice.push([f.naslov, d.ja, d.ne]);
+      vrstice.push([f.naslov, d.ja]);
     });
     var csv = vrstice.map(function (r) {
       return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
@@ -181,7 +188,7 @@
     a.click();
   });
 
-  el('noga').innerHTML = 'Vsak udeleženec za vsak film pove Ja ali Ne. Zmaga film z največ glasovi ZA.';
+  el('noga').innerHTML = 'Vsak udeleženec izbere en film. Zmaga film z največ glasovi.';
 
   naloziRezultate();
   obdelajVrsto();
