@@ -1,0 +1,314 @@
+/* Izbor filma — barvna podoba Inštituta Global Shapers.
+   Brez zunanjih pisav, knjižnic in CDN-jev: vse se naloži z istega naslova. */
+
+:root {
+  /* barve, odčitane z globalshapers.si */
+  --navy:          #0d1b3e;   /* naslovi */
+  --navy-2:        #1a2b6d;   /* gumbi, poudarki */
+  --cyan:          #00a8e8;   /* akcent */
+  --cyan-temn:     #0089bd;
+  --mut:           #6b7a99;   /* pomožno besedilo */
+  --ozadje:        #f4f6fb;
+  --kartica:       #ffffff;
+  --kartica-rob:   #e3e8f2;
+  --polje:         #f7f9fd;
+  --polje-rob:     #dbe2ef;
+  --nevtralno:     #94a0b8;
+
+  --radij:         14px;
+  --senca:         0 6px 24px rgba(13, 27, 62, .07);
+  --senca-mocna:   0 10px 34px rgba(13, 27, 62, .12);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  background:
+    radial-gradient(900px 420px at 50% -8%, #ffffff 0%, transparent 62%),
+    var(--ozadje);
+  color: var(--navy);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  min-height: 100vh;
+}
+
+.ovoj {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 26px 18px 140px;
+}
+
+/* ---------- glava ---------- */
+
+.glava { text-align: center; margin-bottom: 24px; }
+
+.logo {
+  width: 84px;
+  height: 84px;
+  display: block;
+  margin: 0 auto 14px;
+}
+
+.znacka {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: clamp(26px, 7vw, 36px);
+  line-height: 1.15;
+  margin: 0 0 8px;
+  letter-spacing: -.022em;
+  color: var(--navy);
+}
+
+.podnaslov { color: var(--mut); margin: 0; font-size: 15px; }
+
+/* ---------- kartica filma ---------- */
+
+.film {
+  background: var(--kartica);
+  border: 1px solid var(--kartica-rob);
+  border-radius: var(--radij);
+  padding: 16px 16px 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--senca);
+}
+
+.film.odgovorjen { border-color: rgba(0, 168, 232, .45); }
+
+.film legend { float: left; width: 100%; padding: 0; }
+
+/* legend brez float bi se izrisal nad okvirjem kartice */
+.film::after { content: ''; display: block; clear: both; }
+
+fieldset { border: 0; margin: 0; padding: 0; }
+
+.film-naslov {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -.012em;
+  display: block;
+  color: var(--navy);
+}
+
+.film-meta {
+  color: var(--mut);
+  font-size: 13px;
+  margin-top: 3px;
+  display: block;
+}
+
+.film-opis {
+  color: #465476;
+  font-size: 14.5px;
+  margin: 10px 0 14px;
+}
+
+/* ---------- gumbi za oceno ---------- */
+
+.moznosti { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+.moznosti input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.moznosti label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  border: 1px solid var(--polje-rob);
+  border-radius: 10px;
+  background: var(--polje);
+  color: #33415f;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.moznosti label:active { transform: scale(.97); }
+
+.moznosti input:focus-visible + label { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* tri jasno ločena stanja v barvah znamke */
+.moznosti input:checked + label[data-kljuc="ja"] {
+  background: var(--cyan); border-color: var(--cyan); color: #fff;
+}
+.moznosti input:checked + label[data-kljuc="mogoce"] {
+  background: var(--navy-2); border-color: var(--navy-2); color: #fff;
+}
+.moznosti input:checked + label[data-kljuc="ne"] {
+  background: #e9edf6; border-color: var(--nevtralno); color: #4a5772;
+}
+
+/* ---------- ime ---------- */
+
+.ime-blok { margin: 22px 0 8px; }
+
+.ime-blok label { display: block; font-size: 14px; color: var(--mut); margin-bottom: 7px; }
+
+input[type="text"] {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 14px;
+  background: var(--kartica);
+  border: 1px solid var(--polje-rob);
+  border-radius: 10px;
+  color: var(--navy);
+  font-size: 16px;
+  font-family: inherit;
+}
+
+input[type="text"]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+
+/* ---------- spodnja vrstica ---------- */
+
+.spodaj {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(244, 246, 251, 0), rgba(244, 246, 251, .97) 38%);
+  backdrop-filter: blur(8px);
+}
+
+.spodaj-ovoj { max-width: 640px; margin: 0 auto; }
+
+.stevec { font-size: 13px; color: var(--mut); text-align: center; margin: 0 0 8px; }
+
+button.glavni {
+  width: 100%;
+  min-height: 54px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--navy-2);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--senca-mocna);
+  transition: transform .08s ease, opacity .15s ease, background .15s ease;
+}
+
+button.glavni:active { transform: scale(.985); }
+button.glavni:disabled { opacity: .38; cursor: not-allowed; box-shadow: none; }
+
+.drugotni {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--polje-rob);
+  border-radius: 10px;
+  background: var(--kartica);
+  color: var(--navy-2);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---------- sporocila ---------- */
+
+.sporocilo {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  border: 1px solid;
+}
+
+.sporocilo.info   { background: #eaf7fe; border-color: rgba(0,168,232,.35);  color: #0b5d80; }
+.sporocilo.napaka { background: #fdeeee; border-color: rgba(200,60,60,.35);  color: #8e2a2a; }
+.sporocilo.ok     { background: #eaf7fe; border-color: rgba(0,168,232,.35);  color: #0b5d80; }
+
+.sporocilo a { color: var(--navy-2); }
+.sporocilo code {
+  background: rgba(13,27,62,.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* ---------- zahvala ---------- */
+
+.zahvala { text-align: center; padding: 40px 0; }
+.zahvala .kljukica {
+  font-size: 40px;
+  line-height: 1;
+  margin: 0 auto 14px;
+  width: 78px; height: 78px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cyan);
+  color: #fff;
+}
+.zahvala h2 { font-size: 26px; margin: 0 0 8px; color: var(--navy); }
+.zahvala p { color: var(--mut); margin: 0 0 22px; }
+
+/* ---------- rezultati ---------- */
+
+.vrstica { margin-bottom: 18px; }
+
+.vrstica-glava {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.vrstica-naslov { font-weight: 700; font-size: 16.5px; color: var(--navy); }
+.vrstica-tocke { color: var(--navy-2); font-weight: 700; font-size: 16px; white-space: nowrap; }
+
+.stolpec-ozadje {
+  height: 14px;
+  background: #e7ebf4;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--kartica-rob);
+}
+
+.stolpec {
+  height: 100%;
+  background: var(--navy-2);
+  border-radius: 999px;
+  transition: width .5s ease;
+}
+
+.vrstica.zmagovalec .stolpec { background: linear-gradient(90deg, var(--cyan), var(--cyan-temn)); }
+.vrstica.zmagovalec .vrstica-tocke { color: var(--cyan-temn); }
+
+.razbitje { font-size: 12.5px; color: var(--mut); margin-top: 6px; }
+
+.povzetek {
+  background: var(--kartica);
+  border: 1px solid var(--kartica-rob);
+  border-radius: var(--radij);
+  padding: 18px;
+  margin-bottom: 24px;
+  text-align: center;
+  box-shadow: var(--senca);
+}
+
+.povzetek .veliko { font-size: 32px; font-weight: 800; letter-spacing: -.025em; color: var(--navy); }
+.povzetek .majhno { font-size: 12px; color: var(--mut); text-transform: uppercase; letter-spacing: .12em; }
+
+.noga { text-align: center; margin-top: 30px; font-size: 13px; color: var(--mut); }
+.noga a { color: var(--navy-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

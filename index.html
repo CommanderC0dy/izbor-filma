@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f6fb">
+<title>Izbor filma</title>
+<link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+<div class="ovoj">
+  <header class="glava">
+    <img class="logo" src="logo.png" alt="Inštitut Global Shapers" width="128" height="128">
+    <div class="znacka">Global Shapers · Poletna šola</div>
+    <h1 id="naslov">Kateri film gledamo?</h1>
+    <p class="podnaslov" id="podnaslov"></p>
+  </header>
+
+  <main id="vsebina">
+    <form id="obrazec" novalidate>
+      <div id="filmi"></div>
+
+      <div class="ime-blok">
+        <label for="ime">Tvoje ime (ni obvezno)</label>
+        <input type="text" id="ime" name="ime" autocomplete="off" maxlength="40" placeholder="npr. Maja">
+      </div>
+
+      <div id="sporocilo"></div>
+    </form>
+  </main>
+
+  <noscript>
+    <p class="sporocilo napaka">Za glasovanje mora biti vklopljen JavaScript.</p>
+  </noscript>
+</div>
+
+<div class="spodaj" id="spodaj">
+  <div class="spodaj-ovoj">
+    <p class="stevec" id="stevec">Ocenjenih 0 od 0</p>
+    <button type="submit" class="glavni" id="poslji" form="obrazec" disabled>Oddaj glas</button>
+  </div>
+</div>
+
+<script src="filmi.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var K = window.KONFIG;
+  var params = new URLSearchParams(location.search);
+  var kiosk = params.get('kiosk') === '1';       // laptop kroži po sobi
+  var LOKALNO = !K.scriptUrl;                    // ni backenda -> shrani v brskalnik
+
+  var KLJUC_NAPRAVA = 'izborFilma.naprava';
+  var KLJUC_GLASOVAL = 'izborFilma.glasoval';
+  var KLJUC_VRSTA = 'izborFilma.cakalnaVrsta';
+  var KLJUC_LOKALNI = 'izborFilma.lokalniGlasovi';
+
+  /* ---------- pomozne ---------- */
+
+  function el(id) { return document.getElementById(id); }
+
+  function shrani(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+  }
+
+  function preberi(k, privzeto) {
+    try {
+      var v = localStorage.getItem(k);
+      return v === null ? privzeto : JSON.parse(v);
+    } catch (e) { return privzeto; }
+  }
+
+  function napravaId() {
+    var id = preberi(KLJUC_NAPRAVA, null);
+    if (!id) {
+      id = 'n-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      shrani(KLJUC_NAPRAVA, id);
+    }
+    return id;
+  }
+
+  function pobegni(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* JSONP: deluje tudi tam, kjer CORS ponagaja, in nam vrne potrditev. */
+  function jsonp(url, podatki, casOmejitev) {
+    return new Promise(function (resolve, reject) {
+      var ime = 'cb' + Math.random().toString(36).slice(2);
+      var skripta = document.createElement('script');
+      var ura = setTimeout(function () { pocisti(); reject(new Error('cas')); }, casOmejitev || 12000);
+
+      function pocisti() {
+        clearTimeout(ura);
+        try { delete window[ime]; } catch (e) { window[ime] = undefined; }
+        if (skripta.parentNode) skripta.parentNode.removeChild(skripta);
+      }
+
+      window[ime] = function (odgovor) { pocisti(); resolve(odgovor); };
+
+      var q = new URLSearchParams(podatki || {});
+      q.set('callback', ime);
+      skripta.src = url + (url.indexOf('?') === -1 ? '?' : '&') + q.toString();
+      skripta.onerror = function () { pocisti(); reject(new Error('omrezje')); };
+      document.head.appendChild(skripta);
+    });
+  }
+
+  /* ---------- izris ---------- */
+
+  el('naslov').textContent = K.naslov;
+  el('podnaslov').textContent = K.podnaslov;
+  document.title = K.naslov;
+
+  var izbire = {};
+
+  function izrisiFilme() {
+    var html = K.filmi.map(function (f, i) {
+      var moznosti = K.moznosti.map(function (m) {
+        var id = 'o-' + f.id + '-' + m.kljuc;
+        return '<input type="radio" name="' + f.id + '" id="' + id + '" value="' + m.kljuc + '">' +
+               '<label for="' + id + '" data-kljuc="' + m.kljuc + '">' + pobegni(m.oznaka) + '</label>';
+      }).join('');
+
+      return '' +
+        '<fieldset class="film" id="kartica-' + f.id + '">' +
+          '<legend>' +
+            '<span class="film-naslov">' + (i + 1) + '. ' + pobegni(f.naslov) + '</span>' +
+            '<span class="film-meta">' + pobegni([f.leto, f.zanr, f.dolzina].filter(Boolean).join(' · ')) + '</span>' +
+          '</legend>' +
+          (f.opis ? '<p class="film-opis">' + pobegni(f.opis) + '</p>' : '') +
+          '<div class="moznosti">' + moznosti + '</div>' +
+        '</fieldset>';
+    }).join('');
+
+    el('filmi').innerHTML = html;
+  }
+
+  function osveziStevec() {
+    var n = Object.keys(izbire).length;
+    el('stevec').textContent = 'Ocenjenih ' + n + ' od ' + K.filmi.length;
+    el('poslji').disabled = n < K.filmi.length;
+  }
+
+  el('filmi').addEventListener('change', function (e) {
+    var t = e.target;
+    if (t && t.type === 'radio') {
+      izbire[t.name] = t.value;
+      var kartica = el('kartica-' + t.name);
+      if (kartica) kartica.classList.add('odgovorjen');
+      osveziStevec();
+    }
+  });
+
+  /* ---------- sporocila ---------- */
+
+  function sporocilo(besedilo, vrsta) {
+    el('sporocilo').innerHTML = besedilo
+      ? '<p class="sporocilo ' + (vrsta || 'info') + '">' + besedilo + '</p>'
+      : '';
+  }
+
+  /* ---------- oddaja ---------- */
+
+  function sestaviGlas() {
+    var ocene = {};
+    K.filmi.forEach(function (f) {
+      var m = K.moznosti.filter(function (x) { return x.kljuc === izbire[f.id]; })[0];
+      ocene[f.id] = m ? m.tocke : 0;
+    });
+    return {
+      ime: (el('ime').value || '').trim().slice(0, 40),
+      naprava: kiosk ? 'kiosk-' + Math.random().toString(36).slice(2) : napravaId(),
+      ocene: ocene
+    };
+  }
+
+  function shraniLokalno(glas) {
+    var vsi = preberi(KLJUC_LOKALNI, []);
+    // na isti napravi zadnji glas povozi prejsnji (razen v kiosk nacinu)
+    vsi = vsi.filter(function (g) { return g.naprava !== glas.naprava; });
+    vsi.push({ ime: glas.ime, naprava: glas.naprava, ocene: glas.ocene, cas: new Date().toISOString() });
+    shrani(KLJUC_LOKALNI, vsi);
+  }
+
+  function poslji(glas) {
+    return jsonp(K.scriptUrl, {
+      action: 'glas',
+      ime: glas.ime,
+      naprava: glas.naprava,
+      ocene: JSON.stringify(glas.ocene)
+    });
+  }
+
+  /* Cakalna vrsta: ce povezava odpove, glas ne gre v nic. */
+  function vVrsto(glas) {
+    var v = preberi(KLJUC_VRSTA, []);
+    v = v.filter(function (g) { return g.naprava !== glas.naprava; });
+    v.push(glas);
+    shrani(KLJUC_VRSTA, v);
+  }
+
+  function obdelajVrsto() {
+    if (LOKALNO) return;
+    var v = preberi(KLJUC_VRSTA, []);
+    if (!v.length) return;
+    var glas = v[0];
+    poslji(glas).then(function (o) {
+      if (o && o.ok) {
+        shrani(KLJUC_VRSTA, preberi(KLJUC_VRSTA, []).slice(1));
+        obdelajVrsto();
+      }
+    }).catch(function () { /* poskusimo kasneje */ });
+  }
+
+  el('obrazec').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (Object.keys(izbire).length < K.filmi.length) return;
+
+    var glas = sestaviGlas();
+    var gumb = el('poslji');
+    gumb.disabled = true;
+    gumb.textContent = 'Pošiljam…';
+    sporocilo('');
+
+    if (LOKALNO) {
+      shraniLokalno(glas);
+      zahvala(true);
+      return;
+    }
+
+    poslji(glas).then(function (o) {
+      if (o && o.ok) {
+        shrani(KLJUC_GLASOVAL, true);
+        zahvala(true);
+      } else {
+        throw new Error((o && o.napaka) || 'neznana napaka');
+      }
+    }).catch(function () {
+      vVrsto(glas);
+      shrani(KLJUC_GLASOVAL, true);
+      zahvala(false);
+    });
+  });
+
+  function zahvala(uspelo) {
+    var opomba = uspelo
+      ? 'Glas je zabeležen.'
+      : 'Povezava je odpovedala, zato je glas shranjen na tvoji napravi. Pusti to stran odprto — poslala ga bo sama, ko bo signal.';
+
+    el('vsebina').innerHTML =
+      '<div class="zahvala">' +
+        '<div class="kljukica">' + (uspelo ? '✓' : '⏳') + '</div>' +
+        '<h2>Hvala!</h2>' +
+        '<p>' + opomba + '</p>' +
+        '<button type="button" class="drugotni" id="naprej">' +
+          (kiosk ? 'Naslednji, prosim' : 'Poglej rezultate') +
+        '</button>' +
+      '</div>';
+
+    el('spodaj').style.display = 'none';
+    window.scrollTo(0, 0);
+
+    el('naprej').addEventListener('click', function () {
+      if (kiosk) location.href = 'index.html?kiosk=1';
+      else location.href = 'rezultati.html';
+    });
+
+    if (kiosk) setTimeout(function () { location.href = 'index.html?kiosk=1'; }, 4000);
+    if (!uspelo) setTimeout(obdelajVrsto, 5000);
+  }
+
+  /* ---------- zagon ---------- */
+
+  izrisiFilme();
+  osveziStevec();
+
+  if (LOKALNO) {
+    sporocilo('<strong>Lokalni način.</strong> V <code>filmi.js</code> ni nastavljen <code>scriptUrl</code>, zato se glasovi shranjujejo samo v ta brskalnik. Za skupinsko glasovanje glej NAVODILA.md.', 'info');
+  } else if (!kiosk && preberi(KLJUC_GLASOVAL, false)) {
+    sporocilo('S te naprave je glas že oddan. Če glasuješ znova, boš prejšnji glas <strong>zamenjal</strong>. <a href="rezultati.html">Rezultati →</a>', 'info');
+  }
+
+  obdelajVrsto();
+  window.addEventListener('online', obdelajVrsto);
+  setInterval(obdelajVrsto, 15000);
+})();
+</script>
+</body>
+</html>
