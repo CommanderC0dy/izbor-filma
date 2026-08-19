@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f6fb">
+<title>Rezultati — Izbor filma</title>
+<link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+<div class="ovoj">
+  <header class="glava">
+    <img class="logo" src="logo.png" alt="Inštitut Global Shapers" width="128" height="128">
+    <div class="znacka">Global Shapers · Rezultati v živo</div>
+    <h1>Kateri film zmaga?</h1>
+    <p class="podnaslov" id="stanje">Nalagam…</p>
+  </header>
+
+  <main>
+    <div class="povzetek">
+      <div class="veliko" id="stevilo">–</div>
+      <div class="majhno">oddanih glasov</div>
+    </div>
+
+    <div id="lestvica"></div>
+    <div id="sporocilo"></div>
+
+    <p style="text-align:center; margin-top:26px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+      <button type="button" class="drugotni" id="osvezi">Osveži</button>
+      <button type="button" class="drugotni" id="csv">Izvozi CSV</button>
+      <a class="drugotni" href="index.html">Nazaj na glasovanje</a>
+    </p>
+  </main>
+
+  <p class="noga" id="noga"></p>
+</div>
+
+<script src="filmi.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var K = window.KONFIG;
+  var LOKALNO = !K.scriptUrl;
+  var KLJUC_LOKALNI = 'izborFilma.lokalniGlasovi';
+  var KLJUC_VRSTA = 'izborFilma.cakalnaVrsta';
+  var zadnji = null;
+
+  function el(id) { return document.getElementById(id); }
+
+  function pobegni(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function jsonp(url, podatki) {
+    return new Promise(function (resolve, reject) {
+      var ime = 'cb' + Math.random().toString(36).slice(2);
+      var s = document.createElement('script');
+      var ura = setTimeout(function () { pocisti(); reject(new Error('cas')); }, 12000);
+      function pocisti() {
+        clearTimeout(ura);
+        try { delete window[ime]; } catch (e) { window[ime] = undefined; }
+        if (s.parentNode) s.parentNode.removeChild(s);
+      }
+      window[ime] = function (o) { pocisti(); resolve(o); };
+      var q = new URLSearchParams(podatki || {});
+      q.set('callback', ime);
+      s.src = url + (url.indexOf('?') === -1 ? '?' : '&') + q.toString();
+      s.onerror = function () { pocisti(); reject(new Error('omrezje')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function lokalniRezultati() {
+    var vsi = [];
+    try { vsi = JSON.parse(localStorage.getItem(KLJUC_LOKALNI) || '[]'); } catch (e) {}
+    var filmi = {};
+    K.filmi.forEach(function (f) { filmi[f.id] = { tocke: 0, ja: 0, mogoce: 0, ne: 0 }; });
+    vsi.forEach(function (g) {
+      K.filmi.forEach(function (f) {
+        var t = Number(g.ocene[f.id] || 0);
+        filmi[f.id].tocke += t;
+        if (t >= 2) filmi[f.id].ja++;
+        else if (t === 1) filmi[f.id].mogoce++;
+        else filmi[f.id].ne++;
+      });
+    });
+    return { ok: true, glasovalci: vsi.length, filmi: filmi };
+  }
+
+  function izrisi(podatki) {
+    zadnji = podatki;
+    el('stevilo').textContent = podatki.glasovalci;
+
+    var vrstice = K.filmi.map(function (f) {
+      var d = (podatki.filmi && podatki.filmi[f.id]) || { tocke: 0, ja: 0, mogoce: 0, ne: 0 };
+      return { film: f, d: d };
+    }).sort(function (a, b) {
+      return b.d.tocke - a.d.tocke || b.d.ja - a.d.ja;
+    });
+
+    var najvec = Math.max(1, vrstice[0] ? vrstice[0].d.tocke : 1);
+    var maxMozno = Math.max(1, podatki.glasovalci * 2);
+
+    el('lestvica').innerHTML = vrstice.map(function (v, i) {
+      var sirina = Math.round((v.d.tocke / najvec) * 100);
+      var zmaga = i === 0 && v.d.tocke > 0;
+      return '' +
+        '<div class="vrstica' + (zmaga ? ' zmagovalec' : '') + '">' +
+          '<div class="vrstica-glava">' +
+            '<span class="vrstica-naslov">' + (zmaga ? '🏆 ' : '') + pobegni(v.film.naslov) + '</span>' +
+            '<span class="vrstica-tocke">' + v.d.tocke + ' / ' + maxMozno + '</span>' +
+          '</div>' +
+          '<div class="stolpec-ozadje"><div class="stolpec" style="width:' + sirina + '%"></div></div>' +
+          '<div class="razbitje">Ja ' + v.d.ja + ' · Mogoče ' + v.d.mogoce + ' · Ne ' + v.d.ne + '</div>' +
+        '</div>';
+    }).join('');
+
+    var ura = new Date().toLocaleTimeString('sl-SI');
+    el('stanje').textContent = podatki.glasovalci === 0
+      ? 'Še ni glasov.'
+      : 'Osveženo ob ' + ura + (LOKALNO ? ' · lokalni način' : '');
+  }
+
+  function naloziRezultate() {
+    if (LOKALNO) { izrisi(lokalniRezultati()); return; }
+    jsonp(K.scriptUrl, { action: 'rezultati' }).then(function (o) {
+      if (o && o.ok) {
+        el('sporocilo').innerHTML = '';
+        izrisi(o);
+      } else {
+        throw new Error((o && o.napaka) || 'napaka');
+      }
+    }).catch(function () {
+      el('sporocilo').innerHTML =
+        '<p class="sporocilo napaka">Rezultatov ni bilo mogoče prenesti. Preveri povezavo ali <code>scriptUrl</code> v <code>filmi.js</code>.</p>';
+      el('stanje').textContent = 'Brez povezave';
+    });
+  }
+
+  /* Ce je bil na tej napravi glas oddan brez povezave, ga posljemo tudi od tu.
+     (Udeleženec lahko po neuspeli oddaji klikne "Poglej rezultate" in zapusti index.html.) */
+  function obdelajVrsto() {
+    if (LOKALNO) return;
+    var v = [];
+    try { v = JSON.parse(localStorage.getItem(KLJUC_VRSTA) || '[]'); } catch (e) { return; }
+    if (!v.length) return;
+    var g = v[0];
+    jsonp(K.scriptUrl, {
+      action: 'glas', ime: g.ime, naprava: g.naprava, ocene: JSON.stringify(g.ocene)
+    }).then(function (o) {
+      if (o && o.ok) {
+        try { localStorage.setItem(KLJUC_VRSTA, JSON.stringify(v.slice(1))); } catch (e) {}
+        obdelajVrsto();
+        naloziRezultate();
+      }
+    }).catch(function () { /* poskusimo ob naslednjem osvezevanju */ });
+  }
+
+  el('osvezi').addEventListener('click', naloziRezultate);
+
+  el('csv').addEventListener('click', function () {
+    if (!zadnji) return;
+    var vrstice = [['film', 'tocke', 'ja', 'mogoce', 'ne']];
+    K.filmi.forEach(function (f) {
+      var d = (zadnji.filmi && zadnji.filmi[f.id]) || { tocke: 0, ja: 0, mogoce: 0, ne: 0 };
+      vrstice.push([f.naslov, d.tocke, d.ja, d.mogoce, d.ne]);
+    });
+    var csv = vrstice.map(function (r) {
+      return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
+    }).join('\n');
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + csv);
+    a.download = 'izbor-filma-rezultati.csv';
+    a.click();
+  });
+
+  el('noga').innerHTML = 'Točkovanje: Ja = 2 točki, Mogoče = 1, Ne = 0. Zmaga film z največ točkami.';
+
+  naloziRezultate();
+  obdelajVrsto();
+  window.addEventListener('online', obdelajVrsto);
+  setInterval(function () { naloziRezultate(); obdelajVrsto(); },
+              Math.max(3, K.osvezevanjeSekund || 6) * 1000);
+})();
+</script>
+</body>
+</html>
