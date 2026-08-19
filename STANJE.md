@@ -47,8 +47,10 @@ zato reset naredi ti. Traja 15 sekund:
 [odpri projekt](https://script.google.com/home/projects/1Z5XhVYf4XHfzxKFJHHIRjmXUiPsQdkneWK93swrjL1Q_wVMsdZxORTkM/edit)
 → v spustnem meniju izberi funkcijo `pobrisiGlasove` → **Zaženi**. Pobriše vse glasove, glava ostane.
 
-Po tem `rezultati.html` pokaže **0 oddanih glasov**. Ob zadnjem preverjanju (19. 8. 2026, 20:10)
-sta bila v preglednici **2 testna glasova**.
+Po tem `rezultati.html` pokaže **0 oddanih glasov**. Ob zadnjem preverjanju (19. 8. 2026, 20:46)
+so bili v preglednici **4 testni glasovi** — nekaj iz časa, ko je bilo glasovanje še Ja/Ne za vsak
+film, zato lestvica trenutno kaže nesmiselne številke (vsi filmi 2/4). Po brisanju bo v vsaki
+vrstici natanko ena dvojka in številke bodo pravilne.
 
 > Če si na svojem telefonu že testno glasoval, je ta telefon zdaj zaklenjen. Odkleneš ga tako, da
 > v brskalniku počistiš podatke strani, ali pa odpreš zasebno okno. (Brisanje vrstic v preglednici
@@ -86,6 +88,7 @@ V pravem Chromu, proti **objavljenemu naslovu** in **živemu zaledju**:
 | zataknjen glas v čakalni vrsti | stran z rezultati ga sama pošlje, vrsta se izprazni |
 | lokalni (kiosk) način brez zaledja | glasovi se seštevajo v brskalniku, lestvica pravilna |
 | konzola brskalnika | brez napak |
+| **izbira enega filma** (živa stran) | klik na kartico → "Izbrano: …", glas zapisan v ~4,3 s |
 | **en glas na osebo** (živa stran) | po oddaji obrazca ni več, pokaže se "Tvoj glas je oddan" |
 | kiosk način po oddaji | obrazec se normalno odpre za naslednjega |
 
